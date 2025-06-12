@@ -1,21 +1,72 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql" 
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id Int @id @default(autoincrement())
-  username String @unique
-  email String @unique
-  name String
-  age Int
-  password String
+model Usuario {
+  id         Int           @id @default(autoincrement())
+  nome       String
+  email      String        @unique
+  senha      String
+  departamento String
+  curso      String
+  fotoPerfil Bytes?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  avaliacoes Avaliacao[]
+  comentarios Comentario[]
+}
+
+model Professor {
+  id           Int        @id @default(autoincrement())
+  nome         String
+  departamento String
+  disciplinaID Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  disciplina   Disciplina @relation(fields: [disciplinaID], references: [id])
+  avaliacoes   Avaliacao[]
+}
+
+model Disciplina {
+  id           Int         @id @default(autoincrement())
+  nome         String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  professores  Professor[]
+  avaliacoes   Avaliacao[]
+}
+
+model Avaliacao {
+  id           Int         @id @default(autoincrement())
+  usuarioID    Int
+  professorID  Int
+  disciplinaID Int
+  conteudo     String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  usuario      Usuario     @relation(fields: [usuarioID], references: [id])
+  professor    Professor   @relation(fields: [professorID], references: [id])
+  disciplina   Disciplina  @relation(fields: [disciplinaID], references: [id])
+  comentarios  Comentario[]
+}
+
+model Comentario {
+  id           Int        @id @default(autoincrement())
+  usuarioID    Int
+  avaliacaoID  Int
+  conteudo     String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  usuario      Usuario    @relation(fields: [usuarioID], references: [id])
+  avaliacao    Avaliacao  @relation(fields: [avaliacaoID], references: [id])
 }
