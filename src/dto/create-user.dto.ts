@@ -5,6 +5,6 @@ export class CreateUserDto {
   senha: string;
   departamento: string;
   curso: string;
-  fotoPerfil?: Buffer; 
+  fotoPerfil?: Buffer;
 }
 
