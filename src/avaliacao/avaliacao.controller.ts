@@ -29,5 +29,9 @@ export class AvaliacaoController {
         return this.avaliacaoService.delete(Number(id));
     }
 
+    @Get(":id")
+    async getById(@Param("id") id : number) {
+        return this.avaliacaoService.getById(Number(id));
+    }
 
 }

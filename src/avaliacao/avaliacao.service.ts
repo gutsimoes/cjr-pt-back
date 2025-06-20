@@ -52,10 +52,18 @@ export class AvaliacaoService {
         return await this.prisma.avaliacao.delete({
             where: {id}
         })
+    }
 
-        
+    async getById (id:number) {
+        const avaliacaoExiste = await this.prisma.avaliacao.findUnique({
 
+            where: {id,}
+        }); 
+        if(!avaliacaoExiste) {
+            throw new Error("avaliacao nao existe com esse id");
+        }
 
+        return avaliacaoExiste;
     }
 
 }
