@@ -1,42 +1,71 @@
-import { Controller, Get, Post, Param, Body, Put, Delete, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  UnauthorizedException,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { Public } from 'src/auth/decorators/isPublic.decorator';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { UserPayload } from 'src/auth/types/UserPayload';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    const user = await this.userService.create(createUserDto);
-    return user;
+    return this.userService.create(createUserDto);
   }
 
   @Get()
   async findAll() {
-    const users = await this.userService.findAll();
-    return users;
+    return this.userService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.userService.findOne(id);
-    return user;
+ @Get(':id')
+async findOne(
+  @Param('id', ParseIntPipe) id: number,
+  @CurrentUser() currentUser: UserPayload,
+) {
+  if (id !== currentUser.sub) {
+    throw new UnauthorizedException('Você só pode acessar seu próprio perfil.');
   }
 
-  @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
-    const updatedUser = await this.userService.update(id, updateUserDto);
-    return updatedUser;
-  }
-
-  @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    const deletedUser = await this.userService.remove(id);
-    return deletedUser;
-  }
+  return this.userService.findOne(id);
 }
 
 
 
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() currentUser: UserPayload,
+  ) {
+    if (id !== currentUser.sub) {
+      throw new UnauthorizedException('Você só pode atualizar sua própria conta.');
+    }
+    return this.userService.update(id, updateUserDto);
+  }
+
+
+  @Delete(':id')
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() currentUser: UserPayload,
+  ) {
+    if (id !== currentUser.sub) {
+      throw new UnauthorizedException('Você só pode deletar sua própria conta.');
+    }
+    return this.userService.remove(id);
+  }
+}
