@@ -66,4 +66,16 @@ export class AvaliacaoService {
         return avaliacaoExiste;
     }
 
+    async pegarPorAutor (userId:number) {
+        const avaliacaoExiste = await this.prisma.avaliacao.findMany({
+
+            where: {userId,}
+        }); 
+        if(!avaliacaoExiste) {
+            throw new Error("avaliacao nao existe com esse id");
+        }
+
+        return avaliacaoExiste;
+    }
+
 }

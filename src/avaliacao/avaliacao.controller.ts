@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
 import { AvaliacaoDto } from "./dto/avaliacao.dto";
 import { AvaliacaoService } from "./avaliacao.service";
 
@@ -32,6 +32,11 @@ export class AvaliacaoController {
     @Get(":id")
     async getById(@Param("id") id : number) {
         return this.avaliacaoService.getById(Number(id));
+    }
+
+    @Get()
+    async pegarPorAutor(@Query('userId') userId : number) {
+        return this.avaliacaoService.pegarPorAutor(Number(userId));
     }
 
 }
