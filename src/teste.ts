@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  const usuario = await prisma.usuario.create({
+  const user = await prisma.user.create({
     data: {
       nome: "teste",
       senha: "123456",
@@ -13,7 +13,7 @@ async function main() {
     },
   });
 
-  console.log("Usuário criado:", usuario);
+  console.log("Usuário criado:", user);
 }
 
 main()
