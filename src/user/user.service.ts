@@ -1,46 +1,140 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { PrismaService } from 'src/database/prisma.service';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: CreateUserDto) {
-    const user = await this.prisma.user.create({ data });
-    return user;
+  async create(createUserDto: CreateUserDto) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: createUserDto.email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Este e-mail já está sendo usado.');
+    }
+
+    const hashedPassword = await bcrypt.hash(createUserDto.senha, 10);
+
+    return await this.prisma.user.create({
+      data: {
+        ...createUserDto,
+        senha: hashedPassword,
+      },
+    });
   }
 
   async findAll() {
-    const users = await this.prisma.user.findMany();
-    return users;
+    return await this.prisma.user.findMany({
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        departamento: true,
+        curso: true,
+        fotoPerfil: true,
+        createdAt: true,
+        updatedAt: true,
+        avaliacoes: true,
+        comentarios: true,
+      },
+    });
   }
 
   async findOne(id: number) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        departamento: true,
+        curso: true,
+        fotoPerfil: true,
+        createdAt: true,
+        updatedAt: true,
+        avaliacoes: true,
+        comentarios: true,
+      },
+    });
+
     if (!user) {
-      throw new NotFoundException(`Usuário ${id} não encontrado`);
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
+
     return user;
   }
 
-  async update(id: number, data: UpdateUserDto) {
-    try {
-      const updatedUser = await this.prisma.user.update({ where: { id }, data });
-      return updatedUser;
-    } catch {
-      throw new NotFoundException(`Usuário ${id} não encontrado`);
+  async findByEmail(email: string) {
+    return await this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
+
+    let hashedPassword: string | undefined;
+
+    if (updateUserDto.senha) {
+      hashedPassword = await bcrypt.hash(updateUserDto.senha, 10);
+    }
+
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        ...updateUserDto,
+        ...(hashedPassword && { senha: hashedPassword }),
+      },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        departamento: true,
+        curso: true,
+        fotoPerfil: true,
+        createdAt: true,
+        updatedAt: true,
+        avaliacoes: true,
+        comentarios: true,
+      },
+    });
   }
 
   async remove(id: number) {
-    try {
-      const deletedUser = await this.prisma.user.delete({ where: { id } });
-      return deletedUser;
-    } catch {
-      throw new NotFoundException(`Usuário ${id} não encontrado`);
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
+
+    return await this.prisma.user.delete({
+      where: { id },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        departamento: true,
+        curso: true,
+        fotoPerfil: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 }
-
