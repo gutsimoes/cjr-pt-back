@@ -4,9 +4,28 @@ import { AppService } from './app.service';
 import { UserModule } from 'src/user/user.module';
 import { AvaliacaoModule } from 'src/avaliacao/avaliacao.module';
 import { DisciplinaModule } from 'src/disciplina/disciplina.module';
+import { AuthModule } from 'src/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from 'src/auth/guards/auth-guards';
+import { JwtModule } from '@nestjs/jwt';
+
 @Module({
-  imports:[UserModule, AvaliacaoModule, DisciplinaModule],
+  imports: [
+    UserModule,
+    AvaliacaoModule,
+    DisciplinaModule,  
+    AuthModule,
+    JwtModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}
