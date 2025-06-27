@@ -34,5 +34,10 @@ export class DisciplinaController {
         return this.disciplinaService.getById(Number(id));
     }
     
+    @Get(":id/professores")
+    async getProfessores(@Param("id") id : number) {
+        return this.disciplinaService.getProfessores(Number(id));
+    }
+
 
 }

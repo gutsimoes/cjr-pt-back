@@ -66,4 +66,16 @@ export class DisciplinaService {
         return disciplinaExiste;
     }
 
+    async getProfessores(id:number) {
+        const disciplinaExiste = await this.prisma.disciplina.findUnique({
+            where: {id}, 
+            include: {professores:true}
+        });
+        if(!disciplinaExiste) {
+            throw new Error("disciplina nao existe com esse id");
+        }
+
+        return disciplinaExiste.professores;
+    }
+
 }

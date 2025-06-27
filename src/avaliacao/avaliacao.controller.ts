@@ -34,8 +34,8 @@ export class AvaliacaoController {
         return this.avaliacaoService.getById(Number(id));
     }
 
-    @Get()
-    async pegarPorAutor(@Query('userId') userId : number) {
+    @Get("/autor/:userId")
+    async pegarPorAutor(@Param('userId') userId : number) {
         return this.avaliacaoService.pegarPorAutor(Number(userId));
     }
 
