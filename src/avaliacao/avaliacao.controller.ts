@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UnauthorizedException } from "@nestjs/common";
 import { AvaliacaoDto } from "./dto/avaliacao.dto";
 import { AvaliacaoService } from "./avaliacao.service";
 import { Public } from "src/auth/decorators/isPublic.decorator";
+import { CurrentUser } from "src/auth/decorators/current-user.decorator";
+import { UserPayload } from "src/auth/types/UserPayload";
 
 
 @Controller('avaliacao') 
@@ -11,7 +13,10 @@ export class AvaliacaoController {
     constructor (private readonly avaliacaoService: AvaliacaoService) {}
 
     @Post()
-    async create(@Body() data: AvaliacaoDto) {
+    async create(@Body() data: AvaliacaoDto, @CurrentUser() currentUser: UserPayload) {      
+        if(data.userId !== currentUser.sub) {
+            throw new UnauthorizedException("Você só pode criar avaliações como você mesmo.");
+        }
         return this.avaliacaoService.create(data);
     }
 
@@ -22,7 +27,10 @@ export class AvaliacaoController {
     }
 
     @Put(":id")
-    async update(@Param("id") id: number, @Body() data: AvaliacaoDto) {
+    async update(@Param("id") id: number, @Body() data: AvaliacaoDto, @CurrentUser() currentUser: UserPayload) {
+        if(data.userId !== currentUser.sub) {
+            throw new UnauthorizedException("Você só pode criar avaliações como você mesmo.");
+        }
         return this.avaliacaoService.update(Number(id), data);
     }
 

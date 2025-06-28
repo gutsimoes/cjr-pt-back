@@ -1,8 +1,32 @@
-export type AvaliacaoDto = {
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsDefined,
+  IsNumber,
+} from 'class-validator';
+
+export class AvaliacaoDto {
+    @IsOptional()
     id?: number;
-    userId: number
+
+    @IsDefined()
+    @IsNumber()
+    userId: number;
+
+    @IsNotEmpty({ message: 'A avaliação deve estar associada a um professor.' })
+    @IsDefined()
+    @IsNumber()
     professorID: number;
+
+    @IsNotEmpty({ message: 'A avaliação deve estar associada a uma disciplina.' })
+    @IsDefined()
+    @IsNumber()
     disciplinaID: number;
+
+    @IsNotEmpty({ message: 'O conteúdo não pode estar vazio.' })
+    @IsDefined()
+    @IsString()
     conteudo: string;
 }
 // id           Int         @id @default(autoincrement())
