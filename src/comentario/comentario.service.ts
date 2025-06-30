@@ -8,6 +8,19 @@ export class ComentarioService {
     constructor(private prisma:PrismaService) {}
 
     async create (data: ComentarioDto) {
+
+        const usuario = await this.prisma.user.findUnique({where: {id: data.userId}});
+        if (!usuario) {
+            throw new Error("não existe usuário com o userId fornecido");
+        }
+
+        
+        
+        const avaliacao = await this.prisma.avaliacao.findUnique({where: {id: data.avaliacaoID}});
+        if (!avaliacao) {
+            throw new Error("não existe avaliacao com o id fornecido");
+        }
+
         const comentario = await this.prisma.comentario.create({
             data
         });
@@ -66,12 +79,22 @@ export class ComentarioService {
 
     async getByAutor(userId:number) {
 
+        const usuario = await this.prisma.user.findUnique({where: {id: userId}});
+        if (!usuario) {
+            throw new Error("não existe usuário com o userId fornecido");
+        }
+
         const comentarios = await this.prisma.comentario.findMany({where: {userId}});
 
         return comentarios;
     }
 
     async getByAvaliacao(avaliacaoID:number) {
+        const avaliacao = await this.prisma.avaliacao.findUnique({where: {id: avaliacaoID}});
+        if (!avaliacao) {
+            throw new Error("não existe avaliacao com o id fornecido");
+        }
+
         const comentarios = await this.prisma.comentario.findMany({where: {avaliacaoID}});
 
         return comentarios;

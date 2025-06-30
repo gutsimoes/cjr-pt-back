@@ -10,6 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from 'src/auth/guards/auth-guards';
 import { JwtModule } from '@nestjs/jwt';
 import { ProfessorModule } from 'src/professor/professor.module';
+import { ComentarioModule } from 'src/comentario/comentario.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ProfessorModule } from 'src/professor/professor.module';
     AuthModule,
     JwtModule,
     ProfessorModule,
+    ComentarioModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),],

@@ -35,7 +35,14 @@ export class AvaliacaoController {
     }
 
     @Delete(":id")
-    async delete(@Param("id") id: number) {
+    async delete(@Param("id") id: number, @CurrentUser() currentUser : UserPayload) {
+
+        const autorReal = (await this.avaliacaoService.getById(id)).userId;
+
+        if(autorReal !== currentUser.sub) {
+            throw new UnauthorizedException("Você só pode apagar avaliações criadas por você.");
+        }
+
         return this.avaliacaoService.delete(Number(id));
     }
 
