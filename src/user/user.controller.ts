@@ -18,33 +18,36 @@ import { UserPayload } from 'src/auth/types/UserPayload';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
+  //criar um usuário publico
   @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
+  //achar todos os  usuario 
   @Get()
   async findAll() {
     return this.userService.findAll();
   }
 
- @Get(':id')
-async findOne(
-  @Param('id', ParseIntPipe) id: number,
-  @CurrentUser() currentUser: UserPayload,
-) {
-  if (id !== currentUser.sub) {
-    throw new UnauthorizedException('Você só pode acessar seu próprio perfil.');
+  //achar um usuario 
+  @Get(':id')
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() currentUser: UserPayload,
+  ) {
+    if (id !== currentUser.sub) {
+      throw new UnauthorizedException('Você só pode acessar seu próprio perfil.');
+    }
+
+    return this.userService.findOne(id);
   }
 
-  return this.userService.findOne(id);
-}
 
-
-
+  //atualizar um usuario 
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -57,7 +60,7 @@ async findOne(
     return this.userService.update(id, updateUserDto);
   }
 
-
+  //deletar um usuario 
   @Delete(':id')
   async remove(
     @Param('id', ParseIntPipe) id: number,

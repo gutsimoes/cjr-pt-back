@@ -12,12 +12,13 @@ import { UpdateProfessorDto } from './dto/update-professor.dto';
 export class ProfessorService {
   constructor(private readonly prisma: PrismaService) { }
 
+  //verifica se todos os campos foram preenchidos  
   async create(createProfessorDto: CreateProfessorDto) {
     if (!createProfessorDto) {
       throw new BadRequestException('Dados do professor são obrigatórios');
     }
 
-    // Verifica se disciplina existe
+    // verifica se disciplina existe
     const disciplina = await this.prisma.disciplina.findUnique({
       where: { id: createProfessorDto.disciplinaID },
     });
@@ -26,7 +27,7 @@ export class ProfessorService {
       throw new NotFoundException('Disciplina não encontrada');
     }
 
-    // Evita criar professor duplicado com mesmo nome e disciplina (exemplo simples)
+    // evita criar professor duplicado com mesmo nome e disciplina 
     const existingProfessor = await this.prisma.professor.findFirst({
       where: {
         nome: createProfessorDto.nome,
@@ -38,6 +39,7 @@ export class ProfessorService {
       throw new ConflictException('Professor com esse nome e disciplina já existe');
     }
 
+    //retorna o registro completo 
     return await this.prisma.professor.create({
       data: {
         nome: createProfessorDto.nome,
@@ -48,11 +50,12 @@ export class ProfessorService {
         disciplina: {
           select: { id: true, nome: true },
         },
-        avaliacoes: true,
+        avaliacoes: true, //inclui  as avaliações relacionadas
       },
     });
   }
 
+  //busca todos os professores cadastrados no banco 
   async findAll() {
     return await this.prisma.professor.findMany({
       include: {
@@ -65,6 +68,7 @@ export class ProfessorService {
     });
   }
 
+  //busca um professores cadastrado no banco 
   async findOne(id: number) {
     const professor = await this.prisma.professor.findUnique({
       where: { id },
@@ -76,6 +80,7 @@ export class ProfessorService {
       },
     });
 
+    //se não existir esse professor
     if (!professor) {
       throw new NotFoundException(`Professor com ID ${id} não encontrado`);
     }
@@ -83,6 +88,7 @@ export class ProfessorService {
     return professor;
   }
 
+  // atualiza um professor
   async update(id: number, updateProfessorDto: UpdateProfessorDto) {
     const professor = await this.prisma.professor.findUnique({
       where: { id },
@@ -113,6 +119,7 @@ export class ProfessorService {
     });
   }
 
+  // remove um professor
   async remove(id: number) {
     const professor = await this.prisma.professor.findUnique({
       where: { id },

@@ -17,23 +17,28 @@ import { UpdateProfessorDto } from './dto/update-professor.dto';
 export class ProfessorController {
   constructor(private readonly professorService: ProfessorService) { }
 
+  // cria professor
   @Post()
   async create(@Body() createProfessorDto: CreateProfessorDto) {
     return this.professorService.create(createProfessorDto);
   }
 
+  //lista todos os professores (sem autentidicação) 
   @Public()
   @Get()
   async findAll() {
     return this.professorService.findAll();
   }
 
+  //lista um professor especifico  (sem autentidicação) 
   @Public()
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.professorService.findOne(id);
   }
 
+
+  //atualiza os professor
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -42,8 +47,11 @@ export class ProfessorController {
     return this.professorService.update(id, updateProfessorDto);
   }
 
+  //deletar professor
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.professorService.remove(id);
   }
 }
+
+//PerseIntPipe converte pra inteiro 

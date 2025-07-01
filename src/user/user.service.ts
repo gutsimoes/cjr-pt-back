@@ -10,10 +10,12 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
+
+  // cria um novo usuário
   async create(createUserDto: CreateUserDto) {
-    const existingUser = await this.prisma.user.findUnique({
+    const existingUser = await this.prisma.user.findUnique({ //ve se já existe usuário com esse e-mail 
       where: { email: createUserDto.email },
     });
 
@@ -21,7 +23,7 @@ export class UserService {
       throw new ConflictException('Este e-mail já está sendo usado.');
     }
 
-    const hashedPassword = await bcrypt.hash(createUserDto.senha, 10);
+    const hashedPassword = await bcrypt.hash(createUserDto.senha, 10);    // cria hash
 
     return await this.prisma.user.create({
       data: {
@@ -31,6 +33,7 @@ export class UserService {
     });
   }
 
+  // busca e retorna todos os usuários com campos true
   async findAll() {
     return await this.prisma.user.findMany({
       select: {
@@ -48,6 +51,7 @@ export class UserService {
     });
   }
 
+  // Busca e retorna um usuário com campos true
   async findOne(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id },
@@ -72,12 +76,14 @@ export class UserService {
     return user;
   }
 
+  // busca usuário pelo email (serve na autenticação)
   async findByEmail(email: string) {
     return await this.prisma.user.findUnique({
       where: { email },
     });
   }
 
+  // atualiza os dados de um usuário existent
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.prisma.user.findUnique({
       where: { id },
@@ -89,9 +95,11 @@ export class UserService {
 
     let hashedPassword: string | undefined;
 
+    // se a senha foi atualizada cria o outro hash 
     if (updateUserDto.senha) {
       hashedPassword = await bcrypt.hash(updateUserDto.senha, 10);
     }
+
 
     return await this.prisma.user.update({
       where: { id },
@@ -114,6 +122,8 @@ export class UserService {
     });
   }
 
+
+  // Remove um usuário pelo ID
   async remove(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id },
