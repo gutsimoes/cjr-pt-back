@@ -100,6 +100,17 @@ export class ComentarioService {
         return comentarios;
     }
 
+    async getNumeroByAvaliacao(avaliacaoID:number) {
+        const avaliacao = await this.prisma.avaliacao.findUnique({where: {id: avaliacaoID}});
+        if (!avaliacao) {
+            throw new Error("não existe avaliacao com o id fornecido");
+        }
+
+        const comentarios = await this.prisma.comentario.findMany({where: {avaliacaoID}});
+
+        return comentarios.length;
+    }
+
 
 
 }

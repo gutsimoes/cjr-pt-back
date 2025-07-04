@@ -66,5 +66,11 @@ export class ComentarioController {
         return this.comentarioService.getByAvaliacao(avaliacaoID);
     }
 
+    @Public()
+    @Get("/n_avaliacao/:avaliacaoID")
+    async getNumeroByAvaliacao(@Param("avaliacaoID") avaliacaoID : number) {
+        return this.comentarioService.getNumeroByAvaliacao(avaliacaoID);
+    }
+
 
 }
