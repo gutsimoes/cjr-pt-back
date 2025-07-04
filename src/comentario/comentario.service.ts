@@ -100,15 +100,23 @@ export class ComentarioService {
         return comentarios;
     }
 
-    async getNumeroByAvaliacao(avaliacaoID:number) {
-        const avaliacao = await this.prisma.avaliacao.findUnique({where: {id: avaliacaoID}});
-        if (!avaliacao) {
-            throw new Error("não existe avaliacao com o id fornecido");
-        }
+    async getNumeroDeComentariosPorAvaliacao():Promise<Record<number,number>> {
+        
 
-        const comentarios = await this.prisma.comentario.findMany({where: {avaliacaoID}});
+        const conta = await this.prisma.comentario.groupBy({
+            by: ['avaliacaoID'],
+            _count : {
+                id: true
+            }
+        })
 
-        return comentarios.length;
+        const resultado: Record<number,number> = {};
+        conta.forEach((item)=> {
+            resultado[item.avaliacaoID] = item._count.id;
+        })
+
+
+        return resultado;
     }
 
 

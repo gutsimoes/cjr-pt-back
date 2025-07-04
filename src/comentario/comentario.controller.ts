@@ -67,9 +67,9 @@ export class ComentarioController {
     }
 
     @Public()
-    @Get("/n_avaliacao/:avaliacaoID")
-    async getNumeroByAvaliacao(@Param("avaliacaoID") avaliacaoID : number) {
-        return this.comentarioService.getNumeroByAvaliacao(avaliacaoID);
+    @Get("/n_comentarios")
+    async getNumeroDeComentariosPorAvaliacao() {
+        return this.comentarioService.getNumeroDeComentariosPorAvaliacao();
     }
 
 
