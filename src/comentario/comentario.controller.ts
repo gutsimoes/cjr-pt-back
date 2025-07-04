@@ -48,8 +48,14 @@ export class ComentarioController {
     }
 
     @Public()
+    @Get("/n_comentarios")
+    async getNumeroDeComentariosPorAvaliacao() {
+        return this.comentarioService.getNumeroDeComentariosPorAvaliacao();
+    }
+
+    @Public()
     @Get(":id")
-    async getById(@Param("id") id : number) {
+    async aa(@Param("id") id : number) {
         return this.comentarioService.getById(id);
     }
 
@@ -66,11 +72,7 @@ export class ComentarioController {
         return this.comentarioService.getByAvaliacao(avaliacaoID);
     }
 
-    @Public()
-    @Get("/n_comentarios")
-    async getNumeroDeComentariosPorAvaliacao() {
-        return this.comentarioService.getNumeroDeComentariosPorAvaliacao();
-    }
+    
 
 
 }

@@ -101,14 +101,14 @@ export class ComentarioService {
     }
 
     async getNumeroDeComentariosPorAvaliacao():Promise<Record<number,number>> {
-        
-
         const conta = await this.prisma.comentario.groupBy({
             by: ['avaliacaoID'],
             _count : {
                 id: true
             }
         })
+
+
 
         const resultado: Record<number,number> = {};
         conta.forEach((item)=> {
