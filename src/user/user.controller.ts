@@ -20,27 +20,27 @@ import { UserPayload } from 'src/auth/types/UserPayload';
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
-  // Criar um usuário público
+  // criar um usuário público
   @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  // Buscar perfil público de um usuário
+  // buscar perfil público de um usuário
   @Public()
   @Get('public/:id')
   async findPublicProfile(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findPublicProfile(id);
   }
 
-  // Buscar todos os usuários
+  // achar todos os usuários
   @Get()
   async findAll() {
     return this.userService.findAll();
   }
 
-  // Buscar um usuário específico (autenticado)
+  // achar um usuário específico 
   @Get(':id')
   async findOne(
     @Param('id', ParseIntPipe) id: number,
@@ -53,7 +53,7 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
-  // Atualizar um usuário
+  // atualizar um usuário
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -66,7 +66,7 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
-  // Deletar um usuário
+  // deletar um usuário
   @Delete(':id')
   async remove(
     @Param('id', ParseIntPipe) id: number,
