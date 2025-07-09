@@ -4,11 +4,11 @@ import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
 export class AvaliacaoService {
-	
-    constructor(private prisma: PrismaService) {}
+
+    constructor(private prisma: PrismaService) { }
 
 
-	async create (data: AvaliacaoDto) {
+    async create(data: AvaliacaoDto) {
         const avaliacao = await this.prisma.avaliacao.create({
             data
         });
@@ -19,18 +19,18 @@ export class AvaliacaoService {
     async findAll() {
         return await this.prisma.avaliacao.findMany()
     }
-  
 
-    async update (id: number, data : AvaliacaoDto) {
+
+    async update(id: number, data: AvaliacaoDto) {
         const avaliacaoExiste = await this.prisma.avaliacao.findUnique({
 
-            where: {id,}
+            where: { id, }
         });
 
-        if(!avaliacaoExiste) {
+        if (!avaliacaoExiste) {
             throw new Error("avaliacao nao existe com esse id");
         }
-        
+
         return await this.prisma.avaliacao.update({
             data,
             where: {
@@ -40,42 +40,44 @@ export class AvaliacaoService {
 
     }
 
-    async delete (id:number) {
+    async delete(id: number) {
         const avaliacaoExiste = await this.prisma.avaliacao.findUnique({
 
-            where: {id,}
-        }); 
-        if(!avaliacaoExiste) {
+            where: { id, }
+        });
+        if (!avaliacaoExiste) {
             throw new Error("avaliacao nao existe com esse id");
         }
 
         return await this.prisma.avaliacao.delete({
-            where: {id}
+            where: { id }
         })
     }
 
-    async getById (id:number) {
+    async getById(id: number) {
         const avaliacaoExiste = await this.prisma.avaliacao.findUnique({
 
-            where: {id,}
-        }); 
-        if(!avaliacaoExiste) {
+            where: { id, }
+        });
+        if (!avaliacaoExiste) {
             throw new Error("avaliacao nao existe com esse id");
         }
 
         return avaliacaoExiste;
     }
 
-    async pegarPorAutor (userId:number) {
+
+    async pegarPorAutor(userId: number) {
         const avaliacaoExiste = await this.prisma.avaliacao.findMany({
-
-            where: {userId,}
-        }); 
-        if(!avaliacaoExiste) {
-            throw new Error("avaliacao nao existe com esse id");
-        }
-
-        return avaliacaoExiste;
+            where: { userId },
+        })
+        return avaliacaoExiste
     }
 
+    async getByProfessorId(professorId: number) {
+        const avaliacoesDoProfessor = await this.prisma.avaliacao.findMany({
+            where: { professorID: professorId },
+        })
+        return avaliacoesDoProfessor
+    }
 }
