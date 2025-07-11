@@ -8,6 +8,11 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 
+function base64ToBuffer(dataUrl: string): Buffer {
+  const base64 = dataUrl.split(',')[1]; // remove o prefixo
+  return Buffer.from(base64, 'base64'); // cria o buffer
+}
+
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) { }
@@ -15,7 +20,7 @@ export class UserService {
 
   // cria um novo usuário
   async create(createUserDto: CreateUserDto) {
-    const existingUser = await this.prisma.user.findUnique({ //ve se já existe usuário com esse e-mail 
+    const existingUser = await this.prisma.user.findUnique({
       where: { email: createUserDto.email },
     });
 
@@ -23,15 +28,17 @@ export class UserService {
       throw new ConflictException('Este e-mail já está sendo usado.');
     }
 
-    const hashedPassword = await bcrypt.hash(createUserDto.senha, 10);    // cria hash
+    const hashedPassword = await bcrypt.hash(createUserDto.senha, 10);
 
     return await this.prisma.user.create({
       data: {
         ...createUserDto,
         senha: hashedPassword,
+        fotoPerfil: createUserDto.fotoPerfil || null, // aqui é só a string base64
       },
     });
   }
+
 
   // busca e retorna todos os usuários com campos true
   async findAll() {
@@ -106,7 +113,9 @@ export class UserService {
       data: {
         ...updateUserDto,
         ...(hashedPassword && { senha: hashedPassword }),
+        fotoPerfil: updateUserDto.fotoPerfil ?? user.fotoPerfil,
       },
+
       select: {
         id: true,
         nome: true,
