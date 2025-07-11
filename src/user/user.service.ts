@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -15,7 +16,9 @@ function base64ToBuffer(dataUrl: string): Buffer {
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService,
+  ) { }
+  
 
 
   // cria um novo usuário
@@ -133,13 +136,19 @@ export class UserService {
 
 
   // Remove um usuário pelo ID
-  async remove(id: number) {
+  async remove(id: number, senha: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
     });
 
     if (!user) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+    }
+
+    //verificar senha
+    const userValido = await bcrypt.compare(senha, user.senha);
+    if(!userValido) {
+      throw new UnauthorizedException("Senha incorreta");
     }
 
     return await this.prisma.user.delete({

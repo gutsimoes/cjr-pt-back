@@ -77,11 +77,15 @@ export class UserController {
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() currentUser: UserPayload,
+    @Body('senha') senha:string,
   ) {
     if (id !== currentUser.sub) {
       throw new UnauthorizedException('Você só pode deletar sua própria conta.');
     }
-    return this.userService.remove(id);
+
+
+
+    return this.userService.remove(id, senha);
   }
 }
 
