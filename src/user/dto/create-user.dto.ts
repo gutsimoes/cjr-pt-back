@@ -34,6 +34,7 @@ export class CreateUserDto {
   @IsString()
   curso: string;
 
-  @IsOptional() //opcional
-  fotoPerfil?: Buffer;
+  @IsOptional()
+  @IsString()
+  fotoPerfil?: string;
 }
