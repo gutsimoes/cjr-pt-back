@@ -34,6 +34,12 @@ export class UserController {
     return this.userService.findPublicProfile(id);
   }
 
+  @Public()
+  @Get('infoperfil/:id')
+  async getInfoPerfilPublica(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.getInfoPerfilPublica(id);
+  }
+
   // achar todos os usuários
   @Get()
   async findAll() {
