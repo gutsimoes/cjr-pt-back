@@ -173,4 +173,25 @@ export class UserService {
 
     return user;
   }
+
+  async getInfoPerfilPublica(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        departamento: true,
+        curso: true,
+        fotoPerfil: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+    }
+
+    return user;
+  }
+
 }
